@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { ICar } from './interfaces/cars.interfaces';
 
 @Injectable()
@@ -33,13 +33,15 @@ export class CarsService {
    * @returns el auto por el id
    */
   findCardByid(id: number) {
+    //Busca el id que coincida con el id de un auto y lo guarda en la var car
     const car = this.cars.find((car) => car.id === id);
-    if (car.id) {
-      //devuelve el auto
-      return car;
-    } else {
-      //Si no encuentra el id del auto devuelve un 404
-      console.error(`Error:${HttpStatus.NOT_FOUND}`);
+    //Si no encuentra un auto con ese id devuelve un 404 bad request
+    if (!car) {
+      throw new NotFoundException(
+        `El auto con el id '${id}' no fue encontrado`,
+      );
     }
+    // Si encuentra el id del auto lo retorna
+    return car;
   }
 }
