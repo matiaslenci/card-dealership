@@ -1,21 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ICar } from './interfaces/cars.interfaces';
+import { ICar } from './interfaces/car.interfaces';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class CarsService {
-  private cars = [
+  private cars: ICar[] = [
     {
-      id: 1,
+      id: uuid(),
       brand: 'Toyota',
       model: 'Corolla',
     },
     {
-      id: 2,
+      id: uuid(),
       brand: 'Honda',
       model: 'Civic',
     },
     {
-      id: 3,
+      id: uuid(),
       brand: 'Jeep',
       model: 'Cherokee',
     },
@@ -32,7 +33,7 @@ export class CarsService {
    * @param id que obtenemos de los query params
    * @returns el auto por el id
    */
-  findCardByid(id: number) {
+  findCardByid(id: string) {
     //Busca el id que coincida con el id de un auto y lo guarda en la var car
     const car = this.cars.find((car) => car.id === id);
     //Si no encuentra un auto con ese id devuelve un 404 bad request
