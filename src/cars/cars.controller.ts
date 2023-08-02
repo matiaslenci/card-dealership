@@ -8,35 +8,42 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CarsService } from './cars.service';
+import { CreateCarDto } from './dto/create-car.dto';
 
 @Controller('cars')
+/**
+ * ? Pipe a nivel de controlador
+ * ! reemplazado por un pipe a nivel global
+ */
+//@UsePipes(ValidationPipe)
 export class CarsController {
   constructor(private readonly carsSrv: CarsService) {}
 
   @Get() // /cars
   getAllCars() {
-    //Retorna un array con nombres de autos
-    console.log(this.carsSrv.findAllCars());
+    // Retorna un array con nombres de autos
     return this.carsSrv.findAllCars();
   }
 
   @Get(':id') // /cars/:id
   getCarById(@Param('id', ParseUUIDPipe) id: string) {
-    //Retorna el auto que coincida el id con la posicion del array
+    // Retorna el auto que coincida el id con la posicion del array
     return this.carsSrv.findCardByid(id);
   }
 
   /**
    * Crea un nuevo auto
-   * @param body decorador especial de Nest para manipular el body
+   * @param createCarDto es el body de nuestra respuesta
    * de nuestra req
    * @returns el objeto auto que creamos
    */
   @Post()
-  createCar(@Body() body: any) {
-    return body;
+  createCar(@Body() createCarDto: CreateCarDto) {
+    return createCarDto;
   }
 
   /**
