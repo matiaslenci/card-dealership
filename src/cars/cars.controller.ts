@@ -8,8 +8,6 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { CarsService } from './cars.service';
 import { CreateCarDto } from './dto/create-car.dto';
@@ -67,10 +65,8 @@ export class CarsController {
    * @returns el id del objeto eliminado
    */
   @Delete(':id')
-  deleteCar(@Param('id', ParseIntPipe) id: number) {
-    return {
-      method: 'delete',
-      id,
-    };
+  deleteCar(@Param('id') id: string) {
+    this.carsSrv.delete(id);
+    return;
   }
 }
