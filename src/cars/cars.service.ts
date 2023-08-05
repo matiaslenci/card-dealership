@@ -10,21 +10,11 @@ import { v4 as uuid } from 'uuid';
 @Injectable()
 export class CarsService {
   private cars: ICar[] = [
-    {
+    /*     {
       id: uuid(),
       brand: 'Toyota',
       model: 'Corolla',
-    },
-    {
-      id: uuid(),
-      brand: 'Honda',
-      model: 'Civic',
-    },
-    {
-      id: uuid(),
-      brand: 'Jeep',
-      model: 'Cherokee',
-    },
+    }, */
   ];
 
   /**
