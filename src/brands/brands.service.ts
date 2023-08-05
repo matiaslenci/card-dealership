@@ -19,17 +19,7 @@ export class BrandsService {
     }, */
   ];
 
-  create(createBrandDto: CreateBrandDto) {
-    const brand: Brand = {
-      id: uuid(),
-      name: createBrandDto.name.toLocaleLowerCase(),
-      createdAt: new Date().getTime(),
-    };
-
-    this.brands.push(brand);
-
-    return brand;
-  }
+  create(createBrandDto: CreateBrandDto) {}
 
   findAll() {
     return this.brands;
@@ -42,22 +32,7 @@ export class BrandsService {
     return brand;
   }
 
-  update(id: string, updateBrandDto: UpdateBrandDto) {
-    let brandDB = this.findOne(id);
-
-    this.brands = this.brands.map((brand) => {
-      if (brand.id === id) {
-        brandDB.updatedAt = new Date().getTime();
-        brandDB = {
-          ...brandDB,
-          ...updateBrandDto,
-        };
-        return brandDB;
-      }
-      return brand;
-    });
-    return brandDB;
-  }
+  update(id: string, updateBrandDto: UpdateBrandDto) {}
 
   remove(id: string) {
     this.brands = this.brands.filter((brand) => brand.id !== id);
