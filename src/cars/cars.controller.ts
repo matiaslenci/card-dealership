@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { CarsService } from './cars.service';
 import { CreateCarDto } from './dto/create-car.dto';
+import { UpdateCarDto } from './dto/update-car.dto';
 
 @Controller('cars')
 /**
@@ -32,7 +33,7 @@ export class CarsController {
   @Get(':id') // /cars/:id
   getCarById(@Param('id', ParseUUIDPipe) id: string) {
     // Retorna el auto que coincida el id con la posicion del array
-    return this.carsSrv.findCardByid(id);
+    return this.carsSrv.findCardById(id);
   }
 
   /**
@@ -43,7 +44,7 @@ export class CarsController {
    */
   @Post()
   createCar(@Body() createCarDto: CreateCarDto) {
-    return createCarDto;
+    return this.carsSrv.create(createCarDto);
   }
 
   /**
@@ -53,11 +54,11 @@ export class CarsController {
    */
   @Patch(':id')
   updateCar(
-    @Param('id', ParseIntPipe)
+    @Param('id', ParseUUIDPipe) id: string,
     @Body()
-    body: any,
+    updateCarDto: UpdateCarDto,
   ) {
-    return body;
+    return this.carsSrv.update(id, updateCarDto);
   }
 
   /**
