@@ -90,9 +90,27 @@ export class BrandsService {
     }
   }
 
-  async remove(id: string) {
-    const brand = await this.findOne(id);
-    await brand.deleteOne();
+  /**
+   * Elimina un brand por el id de mongo
+   * @param id Mongo id existente
+   * @returns brand
+   */
+  async remove(id: string): Promise<any> {
+    //* Eliminar brand por id/no/name
+    /*  const brand = await this.findOne(id);
+    await brand.deleteOne(); 
+
+    return brand;*/
+
+    //const brand = this.brandModel.findByIdAndDelete(id);
+
+    const { deletedCount } = await this.brandModel.deleteOne({ _id: id });
+
+    if (deletedCount === 0) {
+      throw new BadRequestException(`Brand with id "${id}" not found`);
+    }
+
+    return;
   }
 
   /**
