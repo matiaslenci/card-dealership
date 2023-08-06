@@ -46,6 +46,6 @@ export class BrandsController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return;
+    return this.brandSrv.remove(id);
   }
 }

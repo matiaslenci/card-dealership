@@ -92,6 +92,7 @@ export class BrandsService {
 
   async remove(id: string) {
     const brand = await this.findOne(id);
+    await brand.deleteOne();
   }
 
   /**
