@@ -1,65 +1,132 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 
-import { v4 as uuid } from 'uuid';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { Brand } from './entities/brand.entity';
+import { Model, isValidObjectId } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class BrandsService {
-  private brands: Brand[] = [
-    /*   {
-      id: uuid(),
-      name: 'Toyota',
-      createdAt: new Date().getTime(),
-    }, */
-  ];
+  constructor(
+    @InjectModel(Brand.name)
+    private readonly brandModel: Model<Brand>,
+  ) {}
 
-  create(createBrandDto: CreateBrandDto) {
-    const brand: Brand = {
-      id: uuid(),
-      name: createBrandDto.name.toLocaleLowerCase(),
-      createdAt: new Date().getTime(),
-    };
+  /**
+   *
+   * Pasa el nombre a minuscula y si no hay errores crea una marca
+   *
+   * @returns nueva marca
+   */
+  async create(createBrandDto: CreateBrandDto) {
+    createBrandDto.name = createBrandDto.name.toLocaleLowerCase();
+    try {
+      const brand = await this.brandModel.create(createBrandDto);
 
-    this.brands.push(brand);
-
-    return brand;
-  }
-
-  findAll() {
-    return this.brands;
-  }
-
-  findOne(id: string) {
-    const brand = this.brands.find((brand) => brand.id === id);
-    if (!brand) throw new NotFoundException(`Brand with id "${id}" not found`);
-
-    return brand;
-  }
-
-  update(id: string, updateBrandDto: UpdateBrandDto) {
-    let brandDB = this.findOne(id);
-
-    this.brands = this.brands.map((brand) => {
-      if (brand.id === id) {
-        brandDB.updatedAt = new Date().getTime();
-        brandDB = {
-          ...brandDB,
-          ...updateBrandDto,
-        };
-        return brandDB;
-      }
       return brand;
-    });
-    return brandDB;
+    } catch (error) {
+      this.handleExceptions(error);
+    }
   }
 
-  remove(id: string) {
-    this.brands = this.brands.filter((brand) => brand.id !== id);
+  /**
+   *
+   * @param term termino de busqueda puede ser id,numero de la marca o nombre
+   * @returns marca buscada
+   */
+  async findOne(term: string) {
+    let brand: Brand;
+
+    // No.
+    if (!isNaN(+term)) {
+      brand = await this.brandModel.findOne({ no: term });
+    }
+
+    // MongoId
+    if (!brand && isValidObjectId(term)) {
+      brand = await this.brandModel.findById(term);
+    }
+
+    // Name
+    if (!brand) {
+      brand = await this.brandModel.findOne({
+        name: term.toLocaleLowerCase().trim(),
+      });
+    }
+
+    //! Si no encuentra ninguno
+    if (!brand) {
+      throw new NotFoundException(`Brand with id,name or no ${term} not found`);
+    }
+
+    return brand;
+  }
+
+  /**
+   *
+   * Actualiza el no o el name del brand
+   *
+   * @param term id/name/numero
+   * @returns brand actualizado
+   */
+  async update(term: string, updateBrandDto: UpdateBrandDto) {
+    const brand: Brand = await this.findOne(term);
+
+    try {
+      if (updateBrandDto.name)
+        updateBrandDto.name = updateBrandDto.name.toLocaleLowerCase();
+
+      await brand.updateOne(updateBrandDto);
+
+      return { ...brand.toJSON(), ...updateBrandDto };
+    } catch (error) {
+      this.handleExceptions(error);
+    }
+  }
+
+  /**
+   * Elimina un brand por el id de mongo
+   * @param id Mongo id existente
+   * @returns brand
+   */
+  async remove(id: string): Promise<any> {
+    //* Eliminar brand por id/no/name
+    /*  const brand = await this.findOne(id);
+    await brand.deleteOne(); 
+
+    return brand;*/
+
+    //const brand = this.brandModel.findByIdAndDelete(id);
+
+    const { deletedCount } = await this.brandModel.deleteOne({ _id: id });
+
+    if (deletedCount === 0) {
+      throw new BadRequestException(`Brand with id "${id}" not found`);
+    }
+
+    return;
+  }
+
+  /**
+   * Manejo de excepciones de duplicidad
+   * @param error
+   */
+  private handleExceptions(error: any) {
+    //! Error de duplicidad de mongodb por el nombre de la marca
+    if (error.code === 11000) {
+      throw new BadRequestException(
+        `This Brand exists in db ${JSON.stringify(error.keyValue)}`,
+      );
+    }
+    console.log(error);
+    throw new InternalServerErrorException(
+      "Can't create Brand - Check server logs",
+    );
   }
 }

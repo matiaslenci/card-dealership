@@ -1,10 +1,19 @@
-//Como se ve mi tabla en la db
-export class Brand {
-  id: string;
+import { Prop, SchemaFactory, Schema } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+
+@Schema()
+export class Brand extends Document {
+  @Prop({
+    unique: true,
+    index: true,
+  })
   name: string;
 
-  //fecha de cuando fue creado
-  createdAt: number;
-  //fecha de cuando fue actualizado
-  updatedAt?: number;
+  @Prop({
+    unique: true,
+    index: true,
+  })
+  no: number;
 }
+
+export const BrandSchema = SchemaFactory.createForClass(Brand);

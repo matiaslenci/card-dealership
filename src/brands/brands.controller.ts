@@ -6,41 +6,46 @@ import {
   Patch,
   Param,
   Delete,
-  ParseUUIDPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { BrandsService } from './brands.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
+import { ParseMongoIdPipe } from '../common/pipes/parse-mongo-id.pipe';
 
 @Controller('brands')
 export class BrandsController {
-  constructor(private readonly brandsService: BrandsService) {}
+  constructor(private readonly brandSrv: BrandsService) {}
 
   @Post()
+  //? Podemos personalizar el estatus code con el decorador @HttpCode
+  //@HttpCode(202) //* Pasarle el codigo
+  //@HttpCode(HttpStatus.ACCEPTED) //* Pasarle el mensaje de status
   create(@Body() createBrandDto: CreateBrandDto) {
-    return this.brandsService.create(createBrandDto);
+    return this.brandSrv.create(createBrandDto);
   }
 
   @Get()
   findAll() {
-    return this.brandsService.findAll();
+    return;
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.brandsService.findOne(id);
+  /**
+   * @param term termino de busqueda
+   */
+  @Get(':term')
+  findOne(@Param('term') term: string) {
+    return this.brandSrv.findOne(term);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateBrandDto: UpdateBrandDto,
-  ) {
-    return this.brandsService.update(id, updateBrandDto);
+  @Patch(':term')
+  update(@Param('term') term: string, @Body() updateBrandDto: UpdateBrandDto) {
+    return this.brandSrv.update(term, updateBrandDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.brandsService.remove(id);
+  remove(@Param('id', ParseMongoIdPipe) id: string) {
+    return this.brandSrv.remove(id);
   }
 }
