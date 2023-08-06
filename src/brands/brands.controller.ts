@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   ParseUUIDPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { BrandsService } from './brands.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
@@ -14,11 +16,14 @@ import { UpdateBrandDto } from './dto/update-brand.dto';
 
 @Controller('brands')
 export class BrandsController {
-  constructor(private readonly brandsService: BrandsService) {}
+  constructor(private readonly brandSrv: BrandsService) {}
 
   @Post()
+  //? Podemos personalizar el estatus code con el decorador @HttpCode
+  //@HttpCode(202) //* Pasarle el codigo
+  //@HttpCode(HttpStatus.ACCEPTED) //* Pasarle el mensaje de status
   create(@Body() createBrandDto: CreateBrandDto) {
-    return this.brandsService.create(createBrandDto);
+    return this.brandSrv.create(createBrandDto);
   }
 
   @Get()
@@ -26,21 +31,21 @@ export class BrandsController {
     return;
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return;
+  /**
+   * @param term termino de busqueda
+   */
+  @Get(':term')
+  findOne(@Param('term') term: string) {
+    return this.brandSrv.findOne(term);
   }
 
   @Patch(':id')
-  update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateBrandDto: UpdateBrandDto,
-  ) {
+  update(@Param('id') id: string, @Body() updateBrandDto: UpdateBrandDto) {
     return;
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string) {
+  remove(@Param('id') id: string) {
     return;
   }
 }
