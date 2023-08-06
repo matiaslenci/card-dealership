@@ -39,9 +39,9 @@ export class BrandsController {
     return this.brandSrv.findOne(term);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBrandDto: UpdateBrandDto) {
-    return;
+  @Patch(':term')
+  update(@Param('term') term: string, @Body() updateBrandDto: UpdateBrandDto) {
+    return this.brandSrv.update(term, updateBrandDto);
   }
 
   @Delete(':id')

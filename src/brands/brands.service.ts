@@ -31,16 +31,7 @@ export class BrandsService {
 
       return brand;
     } catch (error) {
-      //! Error de duplicidad de mongodb por el nombre de la marca
-      if (error.code === 11000) {
-        throw new BadRequestException(
-          `This Brand exists in db ${JSON.stringify(error.keyValue)}`,
-        );
-      }
-      console.log(error);
-      throw new InternalServerErrorException(
-        "Can't create Brand - Check server logs",
-      );
+      this.handleExceptions(error);
     }
   }
 
@@ -75,5 +66,48 @@ export class BrandsService {
     }
 
     return brand;
+  }
+
+  /**
+   *
+   * Actualiza el no o el name del brand
+   *
+   * @param term id/name/numero
+   * @returns brand actualizado
+   */
+  async update(term: string, updateBrandDto: UpdateBrandDto) {
+    const brand: Brand = await this.findOne(term);
+
+    try {
+      if (updateBrandDto.name)
+        updateBrandDto.name = updateBrandDto.name.toLocaleLowerCase();
+
+      await brand.updateOne(updateBrandDto);
+
+      return { ...brand.toJSON(), ...updateBrandDto };
+    } catch (error) {
+      this.handleExceptions(error);
+    }
+  }
+
+  async remove(id: string) {
+    const brand = await this.findOne(id);
+  }
+
+  /**
+   * Manejo de excepciones de duplicidad
+   * @param error
+   */
+  private handleExceptions(error: any) {
+    //! Error de duplicidad de mongodb por el nombre de la marca
+    if (error.code === 11000) {
+      throw new BadRequestException(
+        `This Brand exists in db ${JSON.stringify(error.keyValue)}`,
+      );
+    }
+    console.log(error);
+    throw new InternalServerErrorException(
+      "Can't create Brand - Check server logs",
+    );
   }
 }
