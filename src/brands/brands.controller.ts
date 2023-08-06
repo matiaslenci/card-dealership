@@ -23,12 +23,12 @@ export class BrandsController {
 
   @Get()
   findAll() {
-    return this.brandsService.findAll();
+    return;
   }
 
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.brandsService.findOne(id);
+    return;
   }
 
   @Patch(':id')
@@ -36,11 +36,11 @@ export class BrandsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateBrandDto: UpdateBrandDto,
   ) {
-    return this.brandsService.update(id, updateBrandDto);
+    return;
   }
 
   @Delete(':id')
   remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.brandsService.remove(id);
+    return;
   }
 }
