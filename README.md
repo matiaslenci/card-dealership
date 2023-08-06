@@ -6,18 +6,17 @@
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
 # Backend de inventario de autos 
----
 
 1. Clonar repositorio
 2. Ejecutar
 ``` npm
   pnpm install
 ```
-3. Tener Nest CLI instalado
+1. Tener Nest CLI instalado
 ``` npm
   pnpm i -g @nest/cli
 ```
-4. Levantar base de datos
+1. Levantar base de datos
 ``` docker
   docker-compose up
 ```
